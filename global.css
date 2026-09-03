@@ -1,0 +1,174 @@
+/*
+ * 画面づくりの作法。kinetone のアプリで共通です。
+ *
+ * 利用者は高齢の方で、タブレットを離れた位置から見ます。
+ *  - 文字は大きく（vw で画面幅に追従させ、小さい端末でも読める下限を持たせる）
+ *  - 押すところは指先の精度が落ちていても押せる大きさに（最低 84px、主要動線は 120px）
+ *  - **明るい地に濃い文字**にする。加齢で瞳孔が縮み、眼内で光が散りやすくなるため、
+ *    暗い地に白文字だと文字の輪郭がにじんで太って見える。明るい地なら瞳孔が縮んで
+ *    被写界深度が深くなり、像が鮮明になる
+ *  - ただし**地に純白（#fff）は使わない**。生成り（暖色の白）にして明るさの当たりを和らげる
+ *    （カードのような狭い面はほぼ白でよい）
+ *  - **地とアクセントの温度をそろえる。**暖色の地に寒色のボタン、寒色の地に暖色のボタンは
+ *    互いに浮く。実機で見て違和感が出たのがここだった
+ *  - 色だけで情報を伝えない（文字と形も添える）
+ *
+ * 色を足すときは、地に対して本文で 4.5:1、大きな文字でも 3:1 を必ず超えること。
+ * 高齢者はコントラスト感度が落ちるので、規格ぎりぎりではなく余裕を持たせる。
+ */
+
+:root {
+  --bg: #f6f2ea; /* 地。純白ではなく生成り。アクセントと温度をそろえる */
+  --bg-2: #ece5d8; /* グラデーションの濃い側 */
+  --panel: #fffdf9;
+  --line: rgba(46, 38, 32, 0.2);
+
+  --text: #2e2620; /* 地に対して 13.3:1 */
+  --text-dim: #6b5f52; /* 地に対して 5.6:1。補助的な文字にも十分な濃さを持たせる */
+
+  /*
+   * 主要アクション（はじめる など）。
+   * **濃い面に白文字を載せる。**淡い色の面は地との差が 2:1 に届かず、
+   * 輪郭線を足しても「押せるもの」に見えない（実機で確かめた）。
+   */
+  --btn-bg: #a35a12; /* 地に対して 4.7:1。線を引かなくても面で分かる */
+  --btn-ink: #ffffff; /* --btn-bg の上で 5.2:1 */
+  --accent-line: #a35a12; /* 明るい地の上でアクセントを文字や線にするとき。4.7:1 */
+
+  /*
+   * 映像や景色の上（暗い面）で使う明るいアクセント。
+   * **地の色に連動させない。**暗い面の上は白い文字と明るい色でないと読めない。
+   */
+  --accent: #ffb020;
+
+  --bad: #c02626; /* 5.3:1 */
+
+  /* 離れた位置から読めるよう、下限を大きめに取る */
+  --fs-hero: clamp(2.6rem, 6.4vw, 5rem);
+  --fs-xl: clamp(2rem, 4.4vw, 3.4rem);
+  --fs-lg: clamp(1.5rem, 2.8vw, 2.2rem);
+  --fs-md: clamp(1.15rem, 2vw, 1.6rem);
+  --fs-sm: clamp(1rem, 1.5vw, 1.25rem);
+
+  --radius: 20px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: linear-gradient(160deg, var(--bg) 0%, var(--bg-2) 100%);
+  color: var(--text);
+  font-family: 'Hiragino Maru Gothic ProN', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', YuGothic,
+    Meiryo, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/*
+ * 読みやすい幅は max-width ではなく左右の padding で作る。
+ * max-width で要素そのものを細くすると、その外側（左右の余白）を指でなぞっても
+ * スクロールできず、「画面の中央でしかスクロールできない」状態になるため。
+ * 幅は --content-width で画面ごとに変えられる（未指定なら 900px）。
+ */
+.screen {
+  height: 100%;
+  overflow-y: auto;
+  padding: clamp(20px, 3vw, 44px);
+  padding-left: max(clamp(20px, 3vw, 44px), calc((100% - var(--content-width, 900px)) / 2));
+  padding-right: max(clamp(20px, 3vw, 44px), calc((100% - var(--content-width, 900px)) / 2));
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2.2vw, 26px);
+}
+
+/* ブランド表記。どのアプリも同じ見た目にそろえる */
+.brand {
+  margin: 0 0 4px;
+  font-size: var(--fs-sm);
+  letter-spacing: 0.34em;
+  /* 明るい地の上では --accent（黄）は 1.6:1 しかなく読めない。線用の濃い方を使う */
+  color: var(--accent-line);
+  font-weight: 800;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--fs-hero);
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: var(--fs-lg);
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+/* 利用者に読ませる文章。薄い色は使わない */
+.note {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: clamp(18px, 2.4vw, 32px);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 84px; /* 指先の精度が落ちていても押せる大きさ */
+  padding: 0 clamp(24px, 3vw, 48px);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  font-family: inherit;
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn--huge {
+  min-height: 120px;
+  width: 100%;
+  font-size: var(--fs-xl);
+}
+
+.btn:focus-visible {
+  outline: 4px solid var(--text);
+  outline-offset: 3px;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.alert {
+  margin: 0;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 2px solid var(--bad);
+  background: #fdeeec;
+  color: var(--text);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  line-height: 1.7;
+}
