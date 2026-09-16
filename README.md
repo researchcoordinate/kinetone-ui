@@ -7,8 +7,12 @@ JavaScript は入っていません。
 同じ残骸が複数のリポジトリに残っていました。ここを配布元にします。
 
 **対象は明るい地の系統（A）だけです。**
-測定系（chair-stand / one-leg-stand / stepping / mahjong）は、レクと取り違えないよう
+測定系（chair-stand / one-leg-stand / stepping）は、レクと取り違えないよう
 意図的に暗い配色にしています。地の明暗が逆なので、このパッケージは使いません。
+
+**`mahjong` は測定系ではありません。**「楽しく鍛える」のコンテンツです。
+暗い配色で始まったので [`docs/global-css-diff.md`](docs/global-css-diff.md) の
+調査時点では暗い地の系統（B）に数えていますが、v0.1.1 でこのパッケージに移しました。
 
 ## 使い方
 
