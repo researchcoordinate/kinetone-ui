@@ -71,6 +71,7 @@ import './ui/game.css'
 | `.title` | 見出し |
 | `.subtitle` | 副見出し |
 | `.note` | 利用者に読ませる文章 |
+| `.version` | 表紙のいちばん下に出す版。中央そろえ |
 | `.card` | カード |
 | `.btn` | ボタン。`.btn--huge` / `:focus-visible` / `:disabled` を含む |
 | `.alert` | 異常の通知 |
