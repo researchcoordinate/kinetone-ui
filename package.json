@@ -1,6 +1,6 @@
 {
   "name": "@kinetone/ui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": false,
   "type": "module",
   "description": "画面づくりの共通 CSS（明るい地の系統・全アプリ共通・依存なし）",
