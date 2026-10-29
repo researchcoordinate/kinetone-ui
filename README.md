@@ -1,14 +1,17 @@
 # @kinetone/ui
 
-kinetone のアプリで共通に使う CSS を配るパッケージです。ファイルは `global.css` の 1 本だけで、
-JavaScript は入っていません。
+kinetone のアプリで共通に使う CSS を配るパッケージです。ファイルは `global.css` と、
+その配色だけを切り出した `tokens.css` の 2 本で、JavaScript は入っていません。
 
 これまで `src/ui/global.css` を各リポジトリにコピーしていたため、直しても配る手段がなく、
 同じ残骸が複数のリポジトリに残っていました。ここを配布元にします。
 
 **対象は明るい地の系統（A）だけです。**
-測定系（chair-stand / one-leg-stand / stepping）は、レクと取り違えないよう
-意図的に暗い配色にしています。地の明暗が逆なので、このパッケージは使いません。
+測定系（chair-stand / one-leg-stand / stepping の測定）は、レクと取り違えないよう
+意図的に暗い配色にしています。地の明暗が逆なので、`global.css` は使いません。
+
+ただし **stepping のおさんぽ（index.html）は明るい地**で、測定と同じ成果物に入っています。
+そこで v0.3.0 から配色だけを `tokens.css` に分けました（下の「配色だけ借りる」）。
 
 **`mahjong` は測定系ではありません。**「楽しく鍛える」のコンテンツです。
 暗い配色で始まったので [`docs/global-css-diff.md`](docs/global-css-diff.md) の
@@ -53,6 +56,23 @@ import './ui/game.css'
 | `--bad` | 異常や警告の枠線（`.alert` が使用） |
 | `--fs-hero` / `--fs-xl` / `--fs-lg` / `--fs-md` / `--fs-sm` | 文字の大きさ。`clamp()` で画面幅に追従 |
 | `--radius` | 角の丸み |
+
+これらは `tokens.css` が大元で、`global.css` は先頭でそれを `@import` しています。
+
+### 配色だけ借りる（`tokens.css`）
+
+部品の CSS（`.btn`・`.card` など）は要らず、色と文字の大きさだけ使いたいアプリ向けです。
+
+```ts
+import '@kinetone/ui/tokens.css'
+import './ui/global.css' // アプリ自前の CSS（暗い地の :root など）
+```
+
+`tokens.css` は `:root` と `:root[data-theme='light']` の両方に同じ値を置いています。
+アプリ側が自前の `:root { … }` で暗い地を後から書いても、`<html data-theme="light">` の
+ページではこちらが詳細度で勝つので、**明るい地の色をアプリに写し取らずに済みます。**
+アプリ側の `[data-theme='light']` には、このパッケージに無い変数（そのアプリ固有のもの）だけを書き、
+値は `var(--text)` などこちらの変数から作ってください。
 
 `--content-width` はここでは定義していません。`.screen` が `var(--content-width, 900px)` で
 読むだけなので、画面ごとに変えたいときにアプリ側で指定してください。
